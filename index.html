@@ -41,6 +41,31 @@
         margin-top: 40px; 
     }
 
+    .event-details-box {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #0063ee;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.day.has-event {
+    cursor: pointer;
+    transition: transform 0.1s;
+    color: white !important; /* Forces the number to be white */
+    font-weight: bold;
+}
+
+.day.has-event:active {
+    transform: scale(0.9); /* Visual feedback when tapped */
+}
+
     .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #f1f5f9; }
     .header h3 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
     
@@ -60,9 +85,6 @@
     }
 
     .today { color: var(--primary); font-weight: 800; background: #eef2ff; border-radius: 8px; }
-
-    /* TOOLTIP LOGIC */
-    .day.has-event { color: white !important; font-weight: bold; border-radius: 8px; cursor: pointer; }
     
     .has-event:hover::before {
         content: attr(data-event);
@@ -110,6 +132,10 @@
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
     <div id="daysContainer" class="days"></div>
+</div>
+
+<div id="eventInfo" class="event-details-box">
+    Tap a colored day to see event details!
 </div>
 
 <script>
