@@ -191,15 +191,18 @@
 
             // Add Event
             if (events[dayString]) {
-                const eventData = events[dayString];
-                daySquare.classList.add('has-event');
+    const eventData = events[dayString];
+    daySquare.classList.add('has-event');
+    daySquare.style.backgroundColor = eventData.color;
 
-                // Apply the specific color to the background
-                daySquare.style.backgroundColor = eventData.color;
-
-                // Set the hover text
-                daySquare.setAttribute('data-event', eventData.text);
-            }
+    // Add this click function
+    daySquare.addEventListener('click', () => {
+        const infoBox = document.getElementById('eventInfo');
+        infoBox.innerHTML = `<strong>${dayString}:</strong> ${eventData.text}`;
+        infoBox.style.color = "#1e293b"; // Darken text when active
+        infoBox.style.borderColor = eventData.color; // Match border to event color
+    });
+}
 
             daysContainer.appendChild(daySquare);
         }
