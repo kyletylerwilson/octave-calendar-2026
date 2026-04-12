@@ -4,52 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --primary: #6366f1; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 40px; }
-        
-        .calendar { width: 400px; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: white; border-bottom: 1px solid #f1f5f9; }
-        .header h3 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
-        .nav-btn { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .nav-btn:hover { background: #e2e8f0; }
+:root { --primary: #6366f1; --text: #1e293b; }
+    
+    /* Center everything and ensure it doesn't overflow horizontally */
+    body { 
+        font-family: 'Inter', sans-serif; 
+        color: var(--text); 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 20px; /* Reduced from 40px for mobile */
+        margin: 0;
+        background: #f8fafc;
+    }
 
-        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 600; color: #94a3b8; padding: 15px 0; text-transform: uppercase; }
-        
-        .days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-        .day { padding: 18px 0; font-size: 0.95rem; position: relative; border-bottom: 1px solid #f8fafc; color: #475569; }
-        .today { color: var(--primary); font-weight: 800; background: #eef2ff; border-radius: 8px; }
-        
-        /* The Event Indicator */
-        .has-event::after {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 50%;
-        }
+    .logo-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
 
-        /* Tooltip for the event details */
+    .calendar-logo {
+        max-width: 150px; /* Slightly smaller for better fit */
+        height: auto;
+    }
+
+    /* THE CALENDAR - Made Width Flexible */
+    .calendar { 
+        width: 100%; 
+        max-width: 400px; /* Won't go wider than this, but will shrink */
+        background: #fff; 
+        border-radius: 16px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        border: 1px solid #e2e8f0; 
+        margin-top: 40px; 
+    }
+
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #f1f5f9; }
+    .header h3 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
+    
+    .nav-btn { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+
+    .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 600; color: #94a3b8; padding: 10px 0; text-transform: uppercase; }
+    
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 0 5px 10px 5px; }
+    
+    .day { 
+        padding: 15px 0; 
+        font-size: 0.95rem; 
+        position: relative; 
+        border-bottom: 1px solid #f8fafc; 
+        color: #475569; 
+        cursor: default;
+    }
+
+    .today { color: var(--primary); font-weight: 800; background: #eef2ff; border-radius: 8px; }
+
+    /* TOOLTIP LOGIC */
+    .day.has-event { color: white !important; font-weight: bold; border-radius: 8px; cursor: pointer; }
+    
+    .has-event:hover::before {
+        content: attr(data-event);
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e293b;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        z-index: 999;
+    }
+
+    /* MOBILE ADJUSTMENTS */
+    @media (max-width: 450px) {
+        .calendar { width: 95vw; margin-top: 30px; }
+        .day { padding: 12px 0; font-size: 0.85rem; }
+        .header h3 { font-size: 1rem; }
+        .nav-btn { padding: 6px 10px; }
+        
+        /* Stop tooltips from going off-screen on mobile */
         .has-event:hover::before {
-            content: attr(data-event);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 10;
+            white-space: normal;
+            width: 120px;
+            font-size: 0.7rem;
         }
+    }
     </style>
 </head>
 <body>
+    <div class="logo-container">
+        <img src="Favicon.png" alt="Music Shop Logo" class="calendar-logo">
+    </div>    
 
 <div class="calendar">
     <div class="header">
@@ -65,14 +114,12 @@
 
 <script>
     // --- EDIT YOUR EVENTS HERE ---
-    // Format: "Month/Day/Year": "Your Event Text"
     const events = {
-        "4/12/2026": "Website Launch Day! 🚀",
-        "4/25/2026": "Vacation starts",
-        "5/05/2026": "Project Deadline",
-        "12/25/2026": "Christmas Day"
+    "6/15/2025": { text: "End of Year Recital 🏖️", color: "#10b981" }, // Green
+    "10/26/2025": { text: "Halloween Benefit Recital 🎃", color: "#f59e0b" },
+    "12/14/2025": { text: "Winter Recital ☃️", color: "#6366f1" }, // Indigo
+    "12/25/2025": { text: "Christmas Day 🎄", color: "#ef4444" } // Orange
     };
-    // ----------------------------
 
     const daysContainer = document.getElementById('daysContainer');
     const monthDisplay = document.getElementById('monthDisplay');
@@ -80,39 +127,54 @@
 
     function load() {
         const dt = new Date();
-        if (nav !== 0) dt.setMonth(new Date().getMonth() + nav);
+        if (nav !== 0) dt.setMonth(dt.getMonth() + nav);
 
-        const day = dt.getDate();
         const month = dt.getMonth();
         const year = dt.getFullYear();
 
-        const firstDay = new Date(year, month, 1);
+        // RELIABLE START DAY CALCULATION
+        const firstDayOfMonth = new Date(year, month, 1);
+        const paddingDays = firstDayOfMonth.getDay(); // Returns 0 for Sun, 1 for Mon, etc.
+        
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const dateString = firstDay.toLocaleDateString('en-us', { weekday: 'long' });
-        const paddingDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(dateString);
 
         monthDisplay.innerText = `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
         daysContainer.innerHTML = '';
 
-        for(let i = 1; i <= paddingDays + daysInMonth; i++) {
+        // 1. Add Padding Days
+        for (let i = 0; i < paddingDays; i++) {
+            const paddingSquare = document.createElement('div');
+            paddingSquare.classList.add('day');
+            paddingSquare.style.visibility = 'hidden';
+            daysContainer.appendChild(paddingSquare);
+        }
+
+        // 2. Add Actual Days
+        for (let i = 1; i <= daysInMonth; i++) {
             const daySquare = document.createElement('div');
             daySquare.classList.add('day');
-            const dayString = `${month + 1}/${i - paddingDays}/${year}`;
+            daySquare.innerText = i;
 
-            if (i > paddingDays) {
-                daySquare.innerText = i - paddingDays;
-                
-                // Highlight today
-                if (i - paddingDays === day && nav === 0) daySquare.classList.add('today');
-                
-                // Add events from the hardcoded list
-                if (events[dayString]) {
-                    daySquare.classList.add('has-event');
-                    daySquare.setAttribute('data-event', events[dayString]);
-                }
-            } else {
-                daySquare.style.visibility = 'hidden';
+            const dayString = `${month + 1}/${i}/${year}`;
+
+            // Highlight Today
+            const today = new Date();
+            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                daySquare.classList.add('today');
             }
+
+            // Add Event
+            if (events[dayString]) {
+                const eventData = events[dayString];
+                daySquare.classList.add('has-event');
+
+                // Apply the specific color to the background
+                daySquare.style.backgroundColor = eventData.color;
+
+                // Set the hover text
+                daySquare.setAttribute('data-event', eventData.text);
+            }
+
             daysContainer.appendChild(daySquare);
         }
     }
@@ -122,6 +184,7 @@
 
     load();
 </script>
+
 
 </body>
 </html>
