@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root { --primary: #6366f1; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 40px; }
+        
+        .calendar { width: 400px; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: white; border-bottom: 1px solid #f1f5f9; }
+        .header h3 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
+        .nav-btn { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .nav-btn:hover { background: #e2e8f0; }
+
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 600; color: #94a3b8; padding: 15px 0; text-transform: uppercase; }
+        
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+        .day { padding: 18px 0; font-size: 0.95rem; position: relative; border-bottom: 1px solid #f8fafc; color: #475569; }
+        .today { color: var(--primary); font-weight: 800; background: #eef2ff; border-radius: 8px; }
+        
+        /* The Event Indicator */
+        .has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* Tooltip for the event details */
+        .has-event:hover::before {
+            content: attr(data-event);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calendar">
+    <div class="header">
+        <button class="nav-btn" id="prev">&lt;</button>
+        <h3 id="monthDisplay"></h3>
+        <button class="nav-btn" id="next">&gt;</button>
+    </div>
+    <div class="weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div id="daysContainer" class="days"></div>
+</div>
+
+<script>
+    // --- EDIT YOUR EVENTS HERE ---
+    // Format: "Month/Day/Year": "Your Event Text"
+    const events = {
+        "4/12/2026": "Website Launch Day! 🚀",
+        "4/25/2026": "Vacation starts",
+        "5/05/2026": "Project Deadline",
+        "12/25/2026": "Christmas Day"
+    };
+    // ----------------------------
+
+    const daysContainer = document.getElementById('daysContainer');
+    const monthDisplay = document.getElementById('monthDisplay');
+    let nav = 0;
+
+    function load() {
+        const dt = new Date();
+        if (nav !== 0) dt.setMonth(new Date().getMonth() + nav);
+
+        const day = dt.getDate();
+        const month = dt.getMonth();
+        const year = dt.getFullYear();
+
+        const firstDay = new Date(year, month, 1);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const dateString = firstDay.toLocaleDateString('en-us', { weekday: 'long' });
+        const paddingDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(dateString);
+
+        monthDisplay.innerText = `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
+        daysContainer.innerHTML = '';
+
+        for(let i = 1; i <= paddingDays + daysInMonth; i++) {
+            const daySquare = document.createElement('div');
+            daySquare.classList.add('day');
+            const dayString = `${month + 1}/${i - paddingDays}/${year}`;
+
+            if (i > paddingDays) {
+                daySquare.innerText = i - paddingDays;
+                
+                // Highlight today
+                if (i - paddingDays === day && nav === 0) daySquare.classList.add('today');
+                
+                // Add events from the hardcoded list
+                if (events[dayString]) {
+                    daySquare.classList.add('has-event');
+                    daySquare.setAttribute('data-event', events[dayString]);
+                }
+            } else {
+                daySquare.style.visibility = 'hidden';
+            }
+            daysContainer.appendChild(daySquare);
+        }
+    }
+
+    document.getElementById('next').addEventListener('click', () => { nav++; load(); });
+    document.getElementById('prev').addEventListener('click', () => { nav--; load(); });
+
+    load();
+</script>
+
+</body>
+</html>
